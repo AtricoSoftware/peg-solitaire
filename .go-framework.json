@@ -1,0 +1,29 @@
+{
+  "name": "peg-solitaire",
+  "summary": "Brute force peg solitaire solver",
+  "description": "Peg solitaire tool",
+  "repository": "github.com/AtricoSoftware/peg-solitaire",
+  "commands": [
+    {
+      "name": "solve",
+      "description": "Solve board"
+    }
+  ],
+  "settings": [
+    {
+      "name": "verbose",
+      "description": "Output all stages of operation",
+      "type": "bool",
+      "cmdline": "verbose",
+      "cmdlineShortcut": "v",
+      "appliesTo": [
+        "root"
+      ]
+    }
+  ],
+  "libraries": [
+    "github.com/atrico-go/core",
+    "github.com/atrico-go/console",
+    "github.com/atrico-go/display"
+  ]
+}

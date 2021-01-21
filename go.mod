@@ -6,7 +6,7 @@ go 1.15
 require (
 	github.com/atrico-go/console v1.7.0
 	github.com/atrico-go/container v1.4.0
-	github.com/atrico-go/core v1.0.0
+	github.com/atrico-go/core v1.1.0
 	github.com/atrico-go/display v0.0.0-20201220180820-e93c3272a166
 	github.com/atrico-go/testing v1.1.0
 	github.com/atrico-go/viperEx v1.0.0

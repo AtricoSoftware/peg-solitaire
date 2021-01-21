@@ -7,6 +7,8 @@ type Move struct {
 	Directions []Direction
 }
 
+type MoveList []Move
+
 func NewMoveC(pos Coord, dirs ...Direction) Move {
 	return Move{pos, dirs}
 }

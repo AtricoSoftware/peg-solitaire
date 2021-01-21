@@ -43,6 +43,20 @@ func (b Board) Id() string {
 	return id.String()
 }
 
+func (b Board) IsSolved() bool {
+	return b.PegsRemaining() == 1
+}
+
+func (b Board) PegsRemaining() int {
+	total := 0
+	forEachPegCoord(func(pos Coord) {
+		if b.holes[pos] {
+			total++
+		}
+	})
+	return total
+}
+
 // ----------------------------------------------------------------------------------------------------------------------------
 // Implementation
 // ----------------------------------------------------------------------------------------------------------------------------

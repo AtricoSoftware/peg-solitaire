@@ -1,7 +1,7 @@
 package board
 
-func (b Board) GetMoves() []Move {
-	moves := make([]Move, 0)
+func (b Board) GetMoves() MoveList {
+	moves := make(MoveList, 0)
 	forEachPegCoord(func(pos Coord) {
 		if b.holes[pos] {
 			moves = append(moves, b.getMoves(pos)...)
@@ -12,8 +12,8 @@ func (b Board) GetMoves() []Move {
 
 
 // Get moves for a single peg
-func (b Board) getMoves(peg Coord) []Move {
-	moves := make([]Move, 0)
+func (b Board) getMoves(peg Coord) MoveList {
+	moves := make(MoveList, 0)
 	forEachDirection(func(d Direction) {
 		pivot := peg.Shift(d)
 		land := pivot.Shift(d)

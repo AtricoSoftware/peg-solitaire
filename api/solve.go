@@ -3,8 +3,10 @@ package api
 
 import (
 	"github.com/atrico-go/container"
+	"github.com/atrico-go/core"
 
-  	"github.com/AtricoSoftware/peg-solitaire/settings"
+	"github.com/AtricoSoftware/peg-solitaire/api/board"
+	"github.com/AtricoSoftware/peg-solitaire/settings"
 )
 
 func RegisterSolve(c container.Container) {
@@ -17,6 +19,7 @@ config settings.Settings
 
 // Solve board
 func (svc solveApi) Run() error {
-	// Implementation here!
+	b := board.NewBoard()
+	core.DisplayMultiline(b)
 	return nil
 }

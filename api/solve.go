@@ -2,6 +2,10 @@
 package api
 
 import (
+	"fmt"
+	"os"
+	"time"
+
 	"github.com/atrico-go/container"
 	"github.com/atrico-go/core"
 
@@ -21,5 +25,19 @@ config settings.Settings
 func (svc solveApi) Run() error {
 	b := board.NewBoard()
 	core.DisplayMultiline(b)
+	start := time.Now()
+	moves,err := b.Solve()
+	end := time.Now()
+	if err == nil {
+		for iSet,moveSet := range moves {
+			fmt.Printf("Solution: %d (%d moves)\n", iSet, len(moveSet))
+			for i,move:= range moveSet {
+				fmt.Printf("%d:%v\n", i+1, move)
+			}
+		}
+	} else {
+		fmt.Fprintln(os.Stderr, err.Error())
+	}
+	fmt.Printf("time: %v\n", end.Sub(start))
 	return nil
 }

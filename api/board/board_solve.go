@@ -2,6 +2,8 @@ package board
 
 import (
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/atrico-go/core"
 )
@@ -17,7 +19,9 @@ func (b Board) Solve() ([]MoveList, error) {
 
 func solve(queue nodeQueue) ([]MoveList, error) {
 	solutions := make([]MoveList, 0)
-	solved := core.MaxInt
+	// TODO (this is for debugging)
+	// solved := core.MaxInt
+	solved := 7 // 1m39
 	for !queue.isEmpty() {
 		node := queue.pop()
 		// Have we passed the quickest moves
@@ -59,6 +63,8 @@ func newSolutionNode(board Board, moves MoveList) solutionNode {
 func (node solutionNode) AddMove(move Move) solutionNode {
 	b2, err := node.board.MakeMove(move)
 	if err != nil {
+		core.FdisplayMultiline(os.Stderr, node.board)
+		fmt.Fprintln(os.Stderr, move)
 		panic("Invalid move")
 	}
 	return newSolutionNode(b2, append(node.moves, move))

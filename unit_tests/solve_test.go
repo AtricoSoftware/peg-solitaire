@@ -97,7 +97,7 @@ func Test_Solve_MultipleSolutions(t *testing.T) {
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
 		{board.NewMove(00, -1, direction.Right)},
-		{board.NewMove(+1 , -1, direction.Left)},
+		{board.NewMove(+1, -1, direction.Left)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -140,7 +140,9 @@ func Test_Solve_MergeMovesList(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-//		{board.NewMove(-1, -3, direction.Down, direction.Down)},
+		{board.NewMove(-1, -3, direction.Down), board.NewMove(+1, -3, direction.Down), board.NewMove(-2, -1, direction.Right, direction.Right)},
+		{board.NewMove(+1, -3, direction.Down), board.NewMove(-1, -3, direction.Down), board.NewMove(-2, -1, direction.Right, direction.Right)},
+		{board.NewMove(-1, -3, direction.Down), board.NewMove(-2, -1, direction.Right), board.NewMove(+1, -3, direction.Down, direction.Left)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }

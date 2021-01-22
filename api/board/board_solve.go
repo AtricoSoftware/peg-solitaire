@@ -10,7 +10,7 @@ import (
 
 func (b Board) Solve() ([]MoveList, error) {
 	// Seed queue with initial position
-	initial := newSolutionNode(b, make(MoveList, 0))
+	initial := newRootSolutionNode(b)
 	tree := make(solutionTree, 1)
 	tree[b.Id()] = initial
 	return solve(tree, newPendingQueue(b.Id()))
@@ -37,34 +37,35 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 		if node.RemainingPegs == 1 {
 			solutions = append(solutions, nodeId)
 			solved = node.MoveCount
-		}
-		// All Moves
-		board := NewBoardFromId(nodeId)
-		moves := board.GetMoves()
-		node.Links = make([]moveLink, len(moves))
-		for i, move := range moves {
-			b2, err := board.MakeMove(move)
-			if err != nil {
-				core.FdisplayMultiline(os.Stderr, board)
-				fmt.Fprintln(os.Stderr, move)
-				panic("Invalid move")
+		} else {
+			// All Moves
+			board := NewBoardFromId(nodeId)
+			moves := board.GetMoves()
+			node.Links = make([]moveLink, len(moves))
+			for i, move := range moves {
+				b2, err := board.MakeMove(move)
+				if err != nil {
+					core.FdisplayMultiline(os.Stderr, board)
+					fmt.Fprintln(os.Stderr, move)
+					panic("Invalid move")
+				}
+				newId := b2.Id()
+				node.Links[i] = moveLink{move, newId}
+				if _, exist := tree[newId]; !exist {
+					tree[newId] = newSolutionNode(b2, nodeId, append(node.Moves, move))
+					queue.push(newId)
+				}
 			}
-			newId := b2.Id()
-			node.Links[i] = moveLink{move, newId}
-			if _, exist := tree[newId]; !exist {
-				tree[newId] = newSolutionNode(b2, append(node.Moves, move))
-				queue.push(newId)
-			}
+			// Update node (with moves)
+			tree[nodeId] = node
 		}
-		// Update node (with moves)
-		tree[nodeId] = node
 	}
 	if len(solutions) == 0 {
 		return nil, errors.New("cannot be solved")
 	}
-	solutionMoves := make([]MoveList, len(solutions))
-	for i, sln := range solutions {
-		solutionMoves[i] = tree[sln].Moves
+	solutionMoves := make([]MoveList, 0)
+	for _, sln := range solutions {
+		solutionMoves = append(solutionMoves, tree.resolveMoves(sln)...)
 	}
 	return solutionMoves, nil
 }
@@ -77,6 +78,7 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 type solutionTree map[BoardId]solutionNode
 
 type solutionNode struct {
+	Parents       []BoardId
 	Moves         MoveList
 	MoveCount     int
 	RemainingPegs int
@@ -88,8 +90,50 @@ type moveLink struct {
 	Target BoardId
 }
 
-func newSolutionNode(board Board, moves MoveList) solutionNode {
-	return solutionNode{Moves: moves, MoveCount: len(moves), RemainingPegs: board.PegsRemaining()}
+func newRootSolutionNode(board Board) solutionNode {
+	return solutionNode{Parents: make([]BoardId, 0), Moves: make(MoveList, 0), MoveCount: 0, RemainingPegs: board.PegsRemaining()}
+}
+
+func newSolutionNode(board Board, parent BoardId, moves MoveList) solutionNode {
+	return solutionNode{Parents: []BoardId{parent}, Moves: moves, MoveCount: len(moves), RemainingPegs: board.PegsRemaining()}
+}
+
+func (t solutionTree) resolveMoves(id BoardId) []MoveList {
+	return t.resolveMovesImpl(id, make(MoveList, 0))
+}
+
+// TODO - optimise this(?)
+func (t solutionTree) resolveMovesImpl(id BoardId, movesSoFar MoveList) []MoveList {
+	node := t[id]
+	parentCount := len(node.Parents)
+	// End recursion
+	if parentCount == 0 {
+		return []MoveList{movesSoFar}
+	}
+	moves := make([]MoveList, 0)
+	for _, parent := range node.Parents {
+		// Find move in parent
+		nextMove := t.findMoveInParent(parent, id)
+		moves = append(moves, t.resolveMovesImpl(parent, insertIntoMoveList(nextMove, movesSoFar))...)
+	}
+	return moves
+}
+
+func (t solutionTree) findMoveInParent(parentId, nodeId BoardId) Move {
+	parent := t[parentId]
+	for _, link := range parent.Links {
+		if link.Target == nodeId {
+			return link.Move
+		}
+	}
+	panic("Invalid parent relationship")
+}
+
+func insertIntoMoveList(move Move, list MoveList) MoveList {
+	newList := make(MoveList, len(list)+1)
+	newList[0] = move
+	copy(newList[1:], list)
+	return newList
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------

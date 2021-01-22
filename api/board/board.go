@@ -10,8 +10,10 @@ type Board struct {
 
 type BoardId uint64
 
+var InitialId BoardId = 0x1FFFEFFFF
+
 func NewStandardBoard() Board {
-	return NewBoardFromId(0x1FFFEFFFF)
+	return NewBoardFromId(InitialId)
 }
 
 func NewEmptyBoard() Board {

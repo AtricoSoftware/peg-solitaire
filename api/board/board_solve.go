@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/atrico-go/core"
+	"github.com/atrico-go/tree"
 )
 
 func (b Board) Solve() ([]MoveList, error) {
@@ -69,6 +70,9 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 		// Sort the queue for priority
 		queue.prioritisePendingQueue(tree)
 	}
+	// DEBUG start
+	tree.DisplayAsTree()
+	// DEBUG end
 	if len(solutions) == 0 {
 		return nil, errors.New("cannot be solved")
 	}
@@ -136,6 +140,10 @@ func (t solutionTree) findMoveInParent(parentId, nodeId BoardId) Move {
 		}
 	}
 	panic("Invalid parent relationship")
+}
+
+func (t solutionTree) DisplayAsTree() {
+	core.DisplayMultiline(tree.DisplayTree(t, tree.DisplayTreeConfig{}))
 }
 
 

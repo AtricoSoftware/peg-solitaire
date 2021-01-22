@@ -1,6 +1,8 @@
 package board
 
 import (
+	"strings"
+
 	"github.com/atrico-go/console/box_drawing"
 	"github.com/atrico-go/display"
 	"github.com/atrico-go/display/rules"
@@ -8,6 +10,24 @@ import (
 
 	. "github.com/AtricoSoftware/peg-solitaire/xy"
 )
+
+// Stringer
+func (b Board) String() string {
+	txt := strings.Builder{}
+	i := 0
+	b.forEachPegPosition(func(pos Position) {
+		if i==3 || i==6 || i==13 || i==20 || i==27 || i==30 {
+			txt.WriteRune(' ')
+		}
+		if b.holes[pos] {
+			txt.WriteRune('O')
+		} else {
+			txt.WriteRune('.')
+		}
+		i++
+	})
+	return txt.String()
+}
 
 // StringerMl
 func (b Board) StringMl(params ...interface{}) []string {

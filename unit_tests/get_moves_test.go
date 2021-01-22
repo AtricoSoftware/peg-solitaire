@@ -8,6 +8,7 @@ import (
 	"github.com/atrico-go/testing/is"
 
 	"github.com/AtricoSoftware/peg-solitaire/api/board"
+	"github.com/AtricoSoftware/peg-solitaire/api/direction"
 )
 
 func Test_GetMoves_Initial(t *testing.T) {
@@ -20,10 +21,10 @@ func Test_GetMoves_Initial(t *testing.T) {
 
 	// Assert
 	expected := []board.Move{
-		board.NewMove(00, +2, board.Up),
-		board.NewMove(00, -2, board.Down),
-		board.NewMove(+2, 00, board.Left),
-		board.NewMove(-2, 00, board.Right),
+		board.NewMove(00, +2, direction.Up),
+		board.NewMove(00, -2, direction.Down),
+		board.NewMove(+2, 00, direction.Left),
+		board.NewMove(-2, 00, direction.Right),
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "Correct moves")
 }
@@ -41,7 +42,7 @@ func Test_GetMoves_JustOne(t *testing.T) {
 
 	// Assert
 	expected := []board.Move{
-		board.NewMove(-1, -3, board.Down),
+		board.NewMove(-1, -3, direction.Down),
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "Correct moves")
 }
@@ -60,8 +61,8 @@ func Test_GetMoves_Double(t *testing.T) {
 
 	// Assert
 	expected := []board.Move{
-		board.NewMove(-1, -3, board.Down),
-		board.NewMove(-1, -3, board.Down, board.Down),
+		board.NewMove(-1, -3, direction.Down),
+		board.NewMove(-1, -3, direction.Down, direction.Down),
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "Correct moves")
 }
@@ -82,10 +83,10 @@ func Test_GetMoves_Double2(t *testing.T) {
 
 	// Assert
 	expected := []board.Move{
-		board.NewMove(-1, -3, board.Down),
-		board.NewMove(-1, -3, board.Down, board.Down),
-		board.NewMove(-3, -1, board.Right),
-		board.NewMove(-3, -1, board.Right, board.Down),
+		board.NewMove(-1, -3, direction.Down),
+		board.NewMove(-1, -3, direction.Down, direction.Down),
+		board.NewMove(-3, -1, direction.Right),
+		board.NewMove(-3, -1, direction.Right, direction.Down),
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "Correct moves")
 }
@@ -116,29 +117,29 @@ func Test_GetMoves_MultipleFeedInFeedOut(t *testing.T) {
 
 	// Assert
 	expected := []board.Move{
-		board.NewMove(-1, -3, board.Down),
-		board.NewMove(-1, -3, board.Down, board.Down),
-		board.NewMove(-1, -3, board.Down, board.Down, board.Down),
-		board.NewMove(-1, -3, board.Down, board.Down, board.Down, board.Right),
-		board.NewMove(-1, -3, board.Down, board.Down, board.Left),
-		board.NewMove(-1, -3, board.Down, board.Down, board.Right),
-		board.NewMove(-1, -3, board.Down, board.Down, board.Right, board.Right),
-		board.NewMove(-3, -1, board.Down),
-		board.NewMove(-3, -1, board.Down, board.Right),
-		board.NewMove(-3, -1, board.Down, board.Right, board.Up),
-		board.NewMove(-3, -1, board.Down, board.Right, board.Up, board.Left),
-		board.NewMove(-3, -1, board.Down, board.Right, board.Down),
-		board.NewMove(-3, -1, board.Down, board.Right, board.Down, board.Right),
-		board.NewMove(-3, -1, board.Down, board.Right, board.Right),
-		board.NewMove(-3, -1, board.Down, board.Right, board.Right, board.Right),
-		board.NewMove(-3, -1, board.Right),
-		board.NewMove(-3, -1, board.Right, board.Down),
-		board.NewMove(-3, -1, board.Right, board.Down, board.Down),
-		board.NewMove(-3, -1, board.Right, board.Down, board.Down, board.Right),
-		board.NewMove(-3, -1, board.Right, board.Down, board.Left),
-		board.NewMove(-3, -1, board.Right, board.Down, board.Left, board.Up),
-		board.NewMove(-3, -1, board.Right, board.Down, board.Right),
-		board.NewMove(-3, -1, board.Right, board.Down, board.Right, board.Right),
+		board.NewMove(-1, -3, direction.Down),
+		board.NewMove(-1, -3, direction.Down, direction.Down),
+		board.NewMove(-1, -3, direction.Down, direction.Down, direction.Down),
+		board.NewMove(-1, -3, direction.Down, direction.Down, direction.Down, direction.Right),
+		board.NewMove(-1, -3, direction.Down, direction.Down, direction.Left),
+		board.NewMove(-1, -3, direction.Down, direction.Down, direction.Right),
+		board.NewMove(-1, -3, direction.Down, direction.Down, direction.Right, direction.Right),
+		board.NewMove(-3, -1, direction.Down),
+		board.NewMove(-3, -1, direction.Down, direction.Right),
+		board.NewMove(-3, -1, direction.Down, direction.Right, direction.Up),
+		board.NewMove(-3, -1, direction.Down, direction.Right, direction.Up, direction.Left),
+		board.NewMove(-3, -1, direction.Down, direction.Right, direction.Down),
+		board.NewMove(-3, -1, direction.Down, direction.Right, direction.Down, direction.Right),
+		board.NewMove(-3, -1, direction.Down, direction.Right, direction.Right),
+		board.NewMove(-3, -1, direction.Down, direction.Right, direction.Right, direction.Right),
+		board.NewMove(-3, -1, direction.Right),
+		board.NewMove(-3, -1, direction.Right, direction.Down),
+		board.NewMove(-3, -1, direction.Right, direction.Down, direction.Down),
+		board.NewMove(-3, -1, direction.Right, direction.Down, direction.Down, direction.Right),
+		board.NewMove(-3, -1, direction.Right, direction.Down, direction.Left),
+		board.NewMove(-3, -1, direction.Right, direction.Down, direction.Left, direction.Up),
+		board.NewMove(-3, -1, direction.Right, direction.Down, direction.Right),
+		board.NewMove(-3, -1, direction.Right, direction.Down, direction.Right, direction.Right),
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "Correct moves")
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/atrico-go/testing/is"
 
 	"github.com/AtricoSoftware/peg-solitaire/api/board"
+	"github.com/AtricoSoftware/peg-solitaire/api/direction"
 )
 
 func Test_Solve_AlreadyFinished(t *testing.T) {
@@ -56,7 +57,7 @@ func Test_Solve_OneMove(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(-1, -3, board.Down)},
+		{board.NewMove(-1, -3, direction.Down)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -76,7 +77,7 @@ func Test_Solve_TwoMoves(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(00, -1, board.Right), board.NewMove(+3, -1, board.Left)},
+		{board.NewMove(00, -1, direction.Right), board.NewMove(+3, -1, direction.Left)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -95,8 +96,8 @@ func Test_Solve_MultipleSolutions(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(00, -1, board.Right)},
-		{board.NewMove(+1 , -1, board.Left)},
+		{board.NewMove(00, -1, direction.Right)},
+		{board.NewMove(+1 , -1, direction.Left)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -116,7 +117,7 @@ func Test_Solve_GetShortestOnly(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(-1, -3, board.Down, board.Down)},
+		{board.NewMove(-1, -3, direction.Down, direction.Down)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }

@@ -1,5 +1,9 @@
 package board
 
+import (
+	. "github.com/AtricoSoftware/peg-solitaire/xy"
+)
+
 type Board struct {
 	holes map[Position]bool
 }
@@ -15,7 +19,7 @@ func NewEmptyBoard() Board {
 	for y := -3; y <= +3; y++ {
 		for x := -3; x <= +3; x++ {
 			if (intAbs(x) <= 3 && intAbs(y) <= 1) || (intAbs(x) <= 1 && intAbs(y) <= 3) {
-				b.holes[Position{x, y}] = false
+				b.holes[Position{X: x, Y: y}] = false
 			}
 		}
 	}
@@ -25,7 +29,7 @@ func NewEmptyBoard() Board {
 func NewBoardFromId(id BoardId) Board {
 	b := NewEmptyBoard()
 	b.forEachPegPositionReverse(func(pos Position) {
-		b.holes[pos] = id & 1 == 1
+		b.holes[pos] = id&1 == 1
 		id >>= 1
 
 	})

@@ -1,20 +1,25 @@
 package board
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/AtricoSoftware/peg-solitaire/api/direction"
+	. "github.com/AtricoSoftware/peg-solitaire/xy"
+)
 
 type Move struct {
 	Position
-	Directions []Direction
+	Directions []direction.Direction
 }
 
 type MoveList []Move
 
-func NewMoveC(pos Position, dirs ...Direction) Move {
+func NewMoveC(pos Position, dirs ...direction.Direction) Move {
 	return Move{pos, dirs}
 }
 
-func NewMove(x, y int, dirs ...Direction) Move {
-	return NewMoveC(Position{x, y}, dirs...)
+func NewMove(x, y int, dirs ...direction.Direction) Move {
+	return NewMoveC(Position{X: x, Y: y}, dirs...)
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------

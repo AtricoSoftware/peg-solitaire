@@ -9,6 +9,8 @@ import (
 	"github.com/atrico-go/testing/is"
 
 	"github.com/AtricoSoftware/peg-solitaire/api/board"
+	"github.com/AtricoSoftware/peg-solitaire/api/direction"
+	"github.com/AtricoSoftware/peg-solitaire/api/position"
 )
 
 func Test_MakeMove_NoSource(t *testing.T) {
@@ -16,7 +18,7 @@ func Test_MakeMove_NoSource(t *testing.T) {
 	b := board.NewBoardBuilder().
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down)
+	move := board.NewMove(-1, -3, direction.Down)
 
 	// Act
 	_, err := b.MakeMove(move)
@@ -34,7 +36,7 @@ func Test_MakeMove_NoPivot(t *testing.T) {
 		AddPeg(-1, -3).
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down)
+	move := board.NewMove(-1, -3, direction.Down)
 
 	// Act
 	_, err := b.MakeMove(move)
@@ -42,7 +44,7 @@ func Test_MakeMove_NoPivot(t *testing.T) {
 
 	// Assert
 	Assert(t).That(err, is.NotNil, "Error")
-	expected := fmt.Sprintf(`No peg to jump at %v`, move.Position.Shift(board.Down))
+	expected := fmt.Sprintf(`No peg to jump at %v`, position.Shift(move.Position,direction.Down))
 	Assert(t).That(err.Error(), is.EqualTo(expected), "Error message")
 }
 
@@ -54,7 +56,7 @@ func Test_MakeMove_NoLanding(t *testing.T) {
 		AddPeg(-1, -1).
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down)
+	move := board.NewMove(-1, -3, direction.Down)
 
 	// Act
 	_, err := b.MakeMove(move)
@@ -62,7 +64,7 @@ func Test_MakeMove_NoLanding(t *testing.T) {
 
 	// Assert
 	Assert(t).That(err, is.NotNil, "Error")
-	expected := fmt.Sprintf(`No landing space at %v`, move.Position.ShiftN(board.Down, 2))
+	expected := fmt.Sprintf(`No landing space at %v`, position.ShiftN(move.Position,direction.Down, 2))
 	Assert(t).That(err.Error(), is.EqualTo(expected), "Error message")
 }
 
@@ -73,7 +75,7 @@ func Test_MakeMove_NoNthPivot(t *testing.T) {
 		AddPeg(-1, -2).
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down, board.Down)
+	move := board.NewMove(-1, -3, direction.Down, direction.Down)
 
 	// Act
 	_, err := b.MakeMove(move)
@@ -81,7 +83,7 @@ func Test_MakeMove_NoNthPivot(t *testing.T) {
 
 	// Assert
 	Assert(t).That(err, is.NotNil, "Error")
-	expected := fmt.Sprintf(`No peg to jump at %v`, move.Position.ShiftN(board.Down, 3))
+	expected := fmt.Sprintf(`No peg to jump at %v`, position.ShiftN(move.Position,direction.Down, 3))
 	Assert(t).That(err.Error(), is.EqualTo(expected), "Error message")
 }
 
@@ -94,7 +96,7 @@ func Test_MakeMove_NoNthLanding(t *testing.T) {
 		AddPeg(-1, +1).
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down, board.Down)
+	move := board.NewMove(-1, -3, direction.Down, direction.Down)
 
 	// Act
 	_, err := b.MakeMove(move)
@@ -102,7 +104,7 @@ func Test_MakeMove_NoNthLanding(t *testing.T) {
 
 	// Assert
 	Assert(t).That(err, is.NotNil, "Error")
-	expected := fmt.Sprintf(`No landing space at %v`, move.Position.ShiftN(board.Down, 4))
+	expected := fmt.Sprintf(`No landing space at %v`, position.ShiftN(move.Position,direction.Down, 4))
 	Assert(t).That(err.Error(), is.EqualTo(expected), "Error message")
 }
 
@@ -113,7 +115,7 @@ func Test_MakeMove_Single(t *testing.T) {
 		AddPeg(-1, -2).
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down)
+	move := board.NewMove(-1, -3, direction.Down)
 
 	// Act
 	b2, err := b.MakeMove(move)
@@ -138,7 +140,7 @@ func Test_MakeMove_Multiple(t *testing.T) {
 		AddPeg(00, +3).
 		Build()
 	core.DisplayMultiline(b)
-	move := board.NewMove(-1, -3, board.Down, board.Down, board.Down, board.Right)
+	move := board.NewMove(-1, -3, direction.Down, direction.Down, direction.Down, direction.Right)
 
 	// Act
 	b2, err := b.MakeMove(move)

@@ -5,6 +5,8 @@ import (
 	"github.com/atrico-go/display"
 	"github.com/atrico-go/display/rules"
 	"github.com/atrico-go/display/tile"
+
+	. "github.com/AtricoSoftware/peg-solitaire/xy"
 )
 
 // StringerMl

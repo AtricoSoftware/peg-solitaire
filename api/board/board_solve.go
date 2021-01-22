@@ -71,11 +71,6 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 
 type solutionTree map[BoardId]solutionNode
 
-// ----------------------------------------------------------------------------------------------------------------------------
-// Solution node
-// Node in tree
-// ----------------------------------------------------------------------------------------------------------------------------
-
 type solutionNode struct {
 	moves         MoveList
 	moveCount     int

@@ -3,6 +3,8 @@ package board
 import (
 	"errors"
 	"fmt"
+
+	"github.com/AtricoSoftware/peg-solitaire/api/position"
 )
 
 func (b Board) MakeMove(move Move) (Board, error) {
@@ -15,12 +17,12 @@ func (b Board) MakeMove(move Move) (Board, error) {
 	b2.holes[current] = false
 	// Check pivot(s) and landings(s)
 	for _, dir := range move.Directions {
-		current = current.Shift(dir)
+		current = position.Shift(current, dir)
 		if !b2.holes[current] {
 			return b, errors.New(fmt.Sprintf("No peg to jump at %v", current))
 		}
 		b2.holes[current] = false
-		current = current.Shift(dir)
+		current = position.Shift(current, dir)
 		if b2.holes[current] {
 			return b, errors.New(fmt.Sprintf("No landing space at %v", current))
 		}

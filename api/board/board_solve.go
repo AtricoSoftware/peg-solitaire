@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/atrico-go/core"
 )
@@ -30,7 +31,7 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 		nodeId := queue.pop()
 		node := tree[nodeId]
 		// Have we passed the quickest Moves
-		if node.MoveCount > solved {
+		if node.MoveCount > solved || (node.MoveCount == solved && node.RemainingPegs > 1){
 			break
 		}
 		// Check for already solved
@@ -51,14 +52,22 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 				}
 				newId := b2.Id()
 				node.Links[i] = moveLink{move, newId}
-				if _, exist := tree[newId]; !exist {
+
+				if existingNode, exist := tree[newId]; !exist {
+					// New node, marked as pending
 					tree[newId] = newSolutionNode(b2, nodeId, append(node.Moves, move))
 					queue.push(newId)
+				} else {
+					// Add parent to existing node (already pending)
+					existingNode.Parents = append(existingNode.Parents, nodeId)
+					tree[newId] = existingNode
 				}
 			}
 			// Update node (with moves)
 			tree[nodeId] = node
 		}
+		// Sort the queue for priority
+		queue.prioritisePendingQueue(tree)
 	}
 	if len(solutions) == 0 {
 		return nil, errors.New("cannot be solved")
@@ -129,6 +138,7 @@ func (t solutionTree) findMoveInParent(parentId, nodeId BoardId) Move {
 	panic("Invalid parent relationship")
 }
 
+
 func insertIntoMoveList(move Move, list MoveList) MoveList {
 	newList := make(MoveList, len(list)+1)
 	newList[0] = move
@@ -168,3 +178,10 @@ func (q *pendingQueue) pop() BoardId {
 	q.len--
 	return val
 }
+
+func (q *pendingQueue) prioritisePendingQueue(t solutionTree) {
+	sort.Slice(q.queue, func(i, j int) bool {
+		return t[q.queue[i]].RemainingPegs < t[q.queue[j]].RemainingPegs
+	})
+}
+

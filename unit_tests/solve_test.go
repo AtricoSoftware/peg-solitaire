@@ -121,3 +121,26 @@ func Test_Solve_GetShortestOnly(t *testing.T) {
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
+
+// Multiple paths to same position
+func Test_Solve_MergeMovesList(t *testing.T) {
+	// Arrange
+	b := board.NewBoardBuilder().
+		AddPeg(-1, -3).
+		AddPeg(+1, -3).
+		AddPeg(-1, -2).
+		AddPeg(+1, -2).
+		AddPeg(-2, -1).
+		Build()
+	core.DisplayMultiline(b)
+
+	// Act
+	moves, err := b.Solve()
+
+	// Assert
+	Assert(t).That(err, is.Nil, "Error")
+	expected := []board.MoveList{
+//		{board.NewMove(-1, -3, direction.Down, direction.Down)},
+	}
+	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
+}

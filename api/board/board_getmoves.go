@@ -16,7 +16,7 @@ func (b Board) GetMoves() MoveList {
 	return moves
 }
 
-// Get moves for a single peg
+// Get Moves for a single peg
 func (b Board) getMoves(peg Position) MoveList {
 	moves := make(MoveList, 0)
 	direction.ForEachDirection(func(d direction.Direction) {
@@ -26,7 +26,7 @@ func (b Board) getMoves(peg Position) MoveList {
 			if present, valid = b.holes[land]; valid && !present {
 				move := NewMoveC(peg, d)
 				moves = append(moves, move)
-				// Follow on moves
+				// Follow on Moves
 				b2, _ := b.MakeMove(move)
 				for _, next := range b2.getMoves(position.ShiftN(peg, d, 2)) {
 					moves = append(moves, move.Join(next))

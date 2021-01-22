@@ -29,18 +29,20 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 	for !queue.isEmpty() {
 		nodeId := queue.pop()
 		node := tree[nodeId]
-		// Have we passed the quickest moves
-		if node.moveCount > solved {
+		// Have we passed the quickest Moves
+		if node.MoveCount > solved {
 			break
 		}
 		// Check for already solved
-		if node.remainingPegs == 1 {
+		if node.RemainingPegs == 1 {
 			solutions = append(solutions, nodeId)
-			solved = node.moveCount
+			solved = node.MoveCount
 		}
-		// All moves
+		// All Moves
 		board := NewBoardFromId(nodeId)
-		for _, move := range board.GetMoves() {
+		moves := board.GetMoves()
+		node.Links = make([]moveLink, len(moves))
+		for i, move := range moves {
 			b2, err := board.MakeMove(move)
 			if err != nil {
 				core.FdisplayMultiline(os.Stderr, board)
@@ -48,18 +50,21 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 				panic("Invalid move")
 			}
 			newId := b2.Id()
+			node.Links[i] = moveLink{move, newId}
 			if _, exist := tree[newId]; !exist {
-				tree[newId] = newSolutionNode(b2, append(node.moves, move))
+				tree[newId] = newSolutionNode(b2, append(node.Moves, move))
 				queue.push(newId)
 			}
 		}
+		// Update node (with moves)
+		tree[nodeId] = node
 	}
 	if len(solutions) == 0 {
 		return nil, errors.New("cannot be solved")
 	}
 	solutionMoves := make([]MoveList, len(solutions))
 	for i, sln := range solutions {
-		solutionMoves[i] = tree[sln].moves
+		solutionMoves[i] = tree[sln].Moves
 	}
 	return solutionMoves, nil
 }
@@ -72,13 +77,19 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 type solutionTree map[BoardId]solutionNode
 
 type solutionNode struct {
-	moves         MoveList
-	moveCount     int
-	remainingPegs int
+	Moves         MoveList
+	MoveCount     int
+	RemainingPegs int
+	Links         []moveLink
+}
+
+type moveLink struct {
+	Move
+	Target BoardId
 }
 
 func newSolutionNode(board Board, moves MoveList) solutionNode {
-	return solutionNode{moves: moves, moveCount: len(moves), remainingPegs: board.PegsRemaining()}
+	return solutionNode{Moves: moves, MoveCount: len(moves), RemainingPegs: board.PegsRemaining()}
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------

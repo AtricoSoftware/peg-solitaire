@@ -8,7 +8,7 @@ type Builder interface {
 }
 
 func NewBoardBuilder() Builder {
-	b := NewBoardFromId("000000000000000000000000000000000")
+	b := NewEmptyBoard()
 	return &b
 }
 

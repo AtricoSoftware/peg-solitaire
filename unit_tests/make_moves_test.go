@@ -125,7 +125,7 @@ func Test_MakeMove_Single(t *testing.T) {
 	expected := board.NewBoardBuilder().
 		AddPeg(-1, -1).
 		Build()
-	Assert(t).That(b2.Id(), is.EqualTo(expected.Id()), "Correct board")
+	Assert(t).That(b2, is.DeepEqualTo(expected), "Correct board")
 }
 
 func Test_MakeMove_Multiple(t *testing.T) {
@@ -150,5 +150,5 @@ func Test_MakeMove_Multiple(t *testing.T) {
 	expected := board.NewBoardBuilder().
 		AddPeg(+1, +3).
 		Build()
-	Assert(t).That(b2.Id(), is.EqualTo(expected.Id()), "Correct board")
+	Assert(t).That(b2, is.DeepEqualTo(expected), "Correct board")
 }

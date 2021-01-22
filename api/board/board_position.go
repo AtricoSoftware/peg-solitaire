@@ -13,14 +13,24 @@ import "sort"
 // +3     @ @ @
 
 func (b Board) forEachPegPosition(f func(Position)) {
+	b.forEachPegPositionImpl(f, false)
+}
+func (b Board) forEachPegPositionReverse(f func(Position)) {
+	b.forEachPegPositionImpl(f, true)
+}
+func (b Board) forEachPegPositionImpl(f func(Position), reverse bool) {
 	keys := make([]Position, len(b.holes))
 	i := 0
 	for pos := range b.holes {
 		keys[i] = pos
 		i++
 	}
-	sort.Slice(keys, func(i, j int) bool {return keys[i].Less(keys[j])})
-	for _,pos := range keys {
+	less := func(i, j int) bool { return keys[i].Less(keys[j]) }
+	if reverse {
+		less = func(i, j int) bool { return !keys[i].Less(keys[j]) }
+	}
+	sort.Slice(keys, less)
+	for _, pos := range keys {
 		f(pos)
 	}
 }

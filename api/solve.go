@@ -23,7 +23,7 @@ config settings.Settings
 
 // Solve board
 func (svc solveApi) Run() error {
-	b := board.NewBoard()
+	b := board.NewStandardBoard()
 	core.DisplayMultiline(b)
 	start := time.Now()
 	moves,err := b.Solve()

@@ -12,7 +12,7 @@ import (
 
 func Test_GetMoves_Initial(t *testing.T) {
 	// Arrange
-	b := board.NewBoard()
+	b := board.NewStandardBoard()
 	core.DisplayMultiline(b)
 
 	// Act

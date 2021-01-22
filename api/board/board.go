@@ -1,15 +1,13 @@
 package board
 
-import (
-	"strings"
-)
-
 type Board struct {
 	holes map[Position]bool
 }
 
-func NewBoard() Board {
-	return NewBoardFromId("111111111111111101111111111111111")
+type BoardId uint64
+
+func NewStandardBoard() Board {
+	return NewBoardFromId(0x1FFFEFFFF)
 }
 
 func NewEmptyBoard() Board {
@@ -24,26 +22,25 @@ func NewEmptyBoard() Board {
 	return b
 }
 
-func NewBoardFromId(id string) Board {
+func NewBoardFromId(id BoardId) Board {
 	b := NewEmptyBoard()
-	idx := 0
-	b.forEachPegPosition(func(pos Position) {
-		b.holes[pos] = id[idx] == '1'
-		idx++
+	b.forEachPegPositionReverse(func(pos Position) {
+		b.holes[pos] = id & 1 == 1
+		id >>= 1
+
 	})
 	return b
 }
 
-func (b Board) Id() string {
-	id := strings.Builder{}
+func (b Board) Id() BoardId {
+	id := BoardId(0)
 	b.forEachPegPosition(func(pos Position) {
+		id <<= 1
 		if b.holes[pos] {
-			id.WriteRune('1')
-		} else {
-			id.WriteRune('0')
+			id |= 1
 		}
 	})
-	return id.String()
+	return id
 }
 
 func (b Board) IsSolved() bool {

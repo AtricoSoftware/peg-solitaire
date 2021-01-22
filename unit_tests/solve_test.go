@@ -13,7 +13,7 @@ import (
 func Test_Solve_AlreadyFinished(t *testing.T) {
 	// Arrange
 	b := board.NewBoardBuilder().
-		AddPeg(2, 0).
+		AddPeg(-1, -3).
 		Build()
 	core.DisplayMultiline(b)
 
@@ -29,8 +29,8 @@ func Test_Solve_AlreadyFinished(t *testing.T) {
 func Test_Solve_Unsolveable(t *testing.T) {
 	// Arrange
 	b := board.NewBoardBuilder().
-		AddPeg(2, 0).
-		AddPeg(4, 6).
+		AddPeg(-1, -3).
+		AddPeg(+1, +3).
 		Build()
 	core.DisplayMultiline(b)
 
@@ -45,8 +45,8 @@ func Test_Solve_Unsolveable(t *testing.T) {
 func Test_Solve_OneMove(t *testing.T) {
 	// Arrange
 	b := board.NewBoardBuilder().
-		AddPeg(2, 0).
-		AddPeg(2, 1).
+		AddPeg(-1, -3).
+		AddPeg(-1, -2).
 		Build()
 	core.DisplayMultiline(b)
 
@@ -56,7 +56,7 @@ func Test_Solve_OneMove(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(2, 0, board.Down)},
+		{board.NewMove(-1, -3, board.Down)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -64,9 +64,9 @@ func Test_Solve_OneMove(t *testing.T) {
 func Test_Solve_TwoMoves(t *testing.T) {
 	// Arrange
 	b := board.NewBoardBuilder().
-		AddPeg(3, 2).
-		AddPeg(4, 2).
-		AddPeg(6, 2).
+		AddPeg(00, -1).
+		AddPeg(+1, -1).
+		AddPeg(+3, -1).
 		Build()
 	core.DisplayMultiline(b)
 
@@ -76,7 +76,7 @@ func Test_Solve_TwoMoves(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(3, 2, board.Right), board.NewMove(6, 2, board.Left)},
+		{board.NewMove(00, -1, board.Right), board.NewMove(+3, -1, board.Left)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -84,8 +84,8 @@ func Test_Solve_TwoMoves(t *testing.T) {
 func Test_Solve_MultipleSolutions(t *testing.T) {
 	// Arrange
 	b := board.NewBoardBuilder().
-		AddPeg(3, 2).
-		AddPeg(4, 2).
+		AddPeg(00, -1).
+		AddPeg(+1, -1).
 		Build()
 	core.DisplayMultiline(b)
 
@@ -95,8 +95,8 @@ func Test_Solve_MultipleSolutions(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(3, 2, board.Right)},
-		{board.NewMove(4, 2, board.Left)},
+		{board.NewMove(00, -1, board.Right)},
+		{board.NewMove(+1 , -1, board.Left)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }
@@ -104,9 +104,9 @@ func Test_Solve_MultipleSolutions(t *testing.T) {
 func Test_Solve_GetShortestOnly(t *testing.T) {
 	// Arrange
 	b := board.NewBoardBuilder().
-		AddPeg(2, 0).
-		AddPeg(2, 1).
-		AddPeg(2, 3).
+		AddPeg(-1, -3).
+		AddPeg(-1, -2).
+		AddPeg(-1, 00).
 		Build()
 	core.DisplayMultiline(b)
 
@@ -116,7 +116,7 @@ func Test_Solve_GetShortestOnly(t *testing.T) {
 	// Assert
 	Assert(t).That(err, is.Nil, "Error")
 	expected := []board.MoveList{
-		{board.NewMove(2, 0, board.Down, board.Down)},
+		{board.NewMove(-1, -3, board.Down, board.Down)},
 	}
 	Assert(t).That(moves, is.EquivalentTo(expected), "moves")
 }

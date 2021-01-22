@@ -7,10 +7,10 @@ import (
 
 func (b Board) MakeMove(move Move) (Board, error) {
 	b2 := b.Copy()
-	current := move.Coord
+	current := move.Position
 	// Check source
 	if !b2.holes[current] {
-		return b, errors.New(fmt.Sprintf("No peg to move at %v", move.Coord))
+		return b, errors.New(fmt.Sprintf("No peg to move at %v", move.Position))
 	}
 	b2.holes[current] = false
 	// Check pivot(s) and landings(s)

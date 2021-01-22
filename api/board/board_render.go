@@ -18,11 +18,11 @@ func (b Board) Render(_ ...tile.RenderRule) tile.Tile {
 	intV := box_drawing.GetVertical(box_drawing.BoxSingle)
 	extH := box_drawing.GetHorizontal(box_drawing.BoxHeavy)
 	extV := box_drawing.GetVertical(box_drawing.BoxHeavy)
-	centre := b.createSegment(Coord{2, 2}, Coord{4, 4}, &intH, &intH, &intV, &intV, &intH, &intV)
-	top := b.createSegment(Coord{2, 0}, Coord{4, 1}, &extH, nil, &extV, &extV, &intH, &intV)
-	bottom := b.createSegment(Coord{2, 5}, Coord{4, 6}, nil, &extH, &extV, &extV, &intH, &intV)
-	left := b.createSegment(Coord{0, 2}, Coord{1, 4}, &extH, &extH, &extV, nil, &intH, &intV)
-	right := b.createSegment(Coord{5, 2}, Coord{6, 4}, &extH, &extH, nil, &extV, &intH, &intV)
+	centre := b.createSegment(Position{-1, -1}, Position{+1, +1}, &intH, &intH, &intV, &intV, &intH, &intV)
+	top := b.createSegment(Position{-1, -3}, Position{+1, -2}, &extH, nil, &extV, &extV, &intH, &intV)
+	bottom := b.createSegment(Position{-1, +2}, Position{+1, +3}, nil, &extH, &extV, &extV, &intH, &intV)
+	left := b.createSegment(Position{-3, -1}, Position{-2, +1}, &extH, &extH, &extV, nil, &intH, &intV)
+	right := b.createSegment(Position{+2, -1}, Position{+3, +1}, &extH, &extH, nil, &extV, &intH, &intV)
 	return display.NewTableBuilder().
 		AppendRow("", top, "").
 		AppendRow(left, centre, right).
@@ -31,7 +31,7 @@ func (b Board) Render(_ ...tile.RenderRule) tile.Tile {
 		Render(rules.UnicodeIntersections)
 }
 
-func (b Board) createSegment(min, max Coord, up, down, left, right, horiz, vert *rune) tile.Renderable {
+func (b Board) createSegment(min, max Position, up, down, left, right, horiz, vert *rune) tile.Renderable {
 	table := display.NewTableBuilder()
 	if horiz != nil {
 		table.WithHorizontalSeparator(*horiz)
@@ -41,13 +41,13 @@ func (b Board) createSegment(min, max Coord, up, down, left, right, horiz, vert 
 	}
 	for y := min.Y; y <= max.Y; y++ {
 		for x := min.X; x <= max.X; x++ {
-			table.SetCell(x-min.X, y-min.Y, b.getPeg(Coord{x, y}))
+			table.SetCell(x-min.X, y-min.Y, b.getPeg(Position{x, y}))
 		}
 	}
 	return display.NewBorder(table.Build(), up, down, left, right)
 }
 
-func (b Board) getPeg(pos Coord) string {
+func (b Board) getPeg(pos Position) string {
 	if b.holes[pos] {
 		return "O"
 	}

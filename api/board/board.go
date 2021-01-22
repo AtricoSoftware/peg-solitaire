@@ -4,27 +4,30 @@ import (
 	"strings"
 )
 
-//   0 1 2 3 4 5 6
-// 0     @ @ @
-// 1     @ @ @
-// 2 @ @ @ @ @ @ @
-// 3 @ @ @ o @ @ @
-// 4 @ @ @ @ @ @ @
-// 5     @ @ @
-// 6     @ @ @
-
 type Board struct {
-	holes map[Coord]bool
+	holes map[Position]bool
 }
 
 func NewBoard() Board {
 	return NewBoardFromId("111111111111111101111111111111111")
 }
 
+func NewEmptyBoard() Board {
+	b := Board{holes: make(map[Position]bool, 33)}
+	for y := -3; y <= +3; y++ {
+		for x := -3; x <= +3; x++ {
+			if (intAbs(x) <= 3 && intAbs(y) <= 1) || (intAbs(x) <= 1 && intAbs(y) <= 3) {
+				b.holes[Position{x, y}] = false
+			}
+		}
+	}
+	return b
+}
+
 func NewBoardFromId(id string) Board {
-	b := Board{holes: make(map[Coord]bool, 33)}
+	b := NewEmptyBoard()
 	idx := 0
-	forEachPegCoord(func(pos Coord) {
+	b.forEachPegPosition(func(pos Position) {
 		b.holes[pos] = id[idx] == '1'
 		idx++
 	})
@@ -33,7 +36,7 @@ func NewBoardFromId(id string) Board {
 
 func (b Board) Id() string {
 	id := strings.Builder{}
-	forEachPegCoord(func(pos Coord) {
+	b.forEachPegPosition(func(pos Position) {
 		if b.holes[pos] {
 			id.WriteRune('1')
 		} else {
@@ -49,7 +52,7 @@ func (b Board) IsSolved() bool {
 
 func (b Board) PegsRemaining() int {
 	total := 0
-	forEachPegCoord(func(pos Coord) {
+	b.forEachPegPosition(func(pos Position) {
 		if b.holes[pos] {
 			total++
 		}
@@ -57,10 +60,17 @@ func (b Board) PegsRemaining() int {
 	return total
 }
 
+func (b Board) Copy() Board {
+	return NewBoardFromId(b.Id())
+}
+
 // ----------------------------------------------------------------------------------------------------------------------------
 // Implementation
 // ----------------------------------------------------------------------------------------------------------------------------
 
-func (b Board) Copy() Board {
-	return NewBoardFromId(b.Id())
+func intAbs(v int) int {
+	if v < 0 {
+		return -v
+	}
+	return v
 }

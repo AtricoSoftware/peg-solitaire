@@ -10,89 +10,106 @@ import (
 
 func (b Board) Solve() ([]MoveList, error) {
 	// Seed queue with initial position
-	return solve(newNodeQueue(newSolutionNode(b, make(MoveList, 0))))
+	initial := newSolutionNode(b, make(MoveList, 0))
+	tree := make(solutionTree, 1)
+	tree[b.Id()] = initial
+	return solve(tree, newPendingQueue(b.Id()))
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
 // Implementation
 // ----------------------------------------------------------------------------------------------------------------------------
 
-func solve(queue nodeQueue) ([]MoveList, error) {
-	solutions := make([]MoveList, 0)
+func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
+	solutions := make([]BoardId, 0)
 	// TODO (this is for debugging)
 	// solved := core.MaxInt
-	solved := 7 // 1m39
+	// solved := 7 // 1m39 => 43s
+	solved := 8 // 3m47
 	for !queue.isEmpty() {
-		node := queue.pop()
+		nodeId := queue.pop()
+		node := tree[nodeId]
 		// Have we passed the quickest moves
 		if node.moveCount > solved {
 			break
 		}
 		// Check for already solved
 		if node.remainingPegs == 1 {
-			solutions = append(solutions, node.moves)
+			solutions = append(solutions, nodeId)
 			solved = node.moveCount
 		}
 		// All moves
-		for _, move := range node.board.GetMoves() {
-			queue.push(node.AddMove(move))
+		board := NewBoardFromId(nodeId)
+		for _, move := range board.GetMoves() {
+			b2, err := board.MakeMove(move)
+			if err != nil {
+				core.FdisplayMultiline(os.Stderr, board)
+				fmt.Fprintln(os.Stderr, move)
+				panic("Invalid move")
+			}
+			newId := b2.Id()
+			if _, exist := tree[newId]; !exist {
+				tree[newId] = newSolutionNode(b2, append(node.moves, move))
+				queue.push(newId)
+			}
 		}
 	}
-	var err error
 	if len(solutions) == 0 {
-		err = errors.New("cannot be solved")
+		return nil, errors.New("cannot be solved")
 	}
-	return solutions, err
+	solutionMoves := make([]MoveList, len(solutions))
+	for i, sln := range solutions {
+		solutionMoves[i] = tree[sln].moves
+	}
+	return solutionMoves, nil
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
+// Solution tree
+// "Game" tree for calculating solution
+// ----------------------------------------------------------------------------------------------------------------------------
+
+type solutionTree map[BoardId]solutionNode
+
+// ----------------------------------------------------------------------------------------------------------------------------
 // Solution node
+// Node in tree
 // ----------------------------------------------------------------------------------------------------------------------------
 
 type solutionNode struct {
-	board         Board
 	moves         MoveList
 	moveCount     int
 	remainingPegs int
 }
 
 func newSolutionNode(board Board, moves MoveList) solutionNode {
-	return solutionNode{board: board, moves: moves, moveCount: len(moves), remainingPegs: board.PegsRemaining()}
-}
-
-func (node solutionNode) AddMove(move Move) solutionNode {
-	b2, err := node.board.MakeMove(move)
-	if err != nil {
-		core.FdisplayMultiline(os.Stderr, node.board)
-		fmt.Fprintln(os.Stderr, move)
-		panic("Invalid move")
-	}
-	return newSolutionNode(b2, append(node.moves, move))
+	return solutionNode{moves: moves, moveCount: len(moves), remainingPegs: board.PegsRemaining()}
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
-// Node queue
+// Pending queue
+// Nodes pending expansion
 // ----------------------------------------------------------------------------------------------------------------------------
 
-func newNodeQueue(nodes ...solutionNode) nodeQueue {
-	return nodeQueue{queue: nodes, len: len(nodes)}
-}
-
-type nodeQueue struct {
-	queue []solutionNode
+type pendingQueue struct {
+	queue []BoardId
 	len   int
 }
 
-func (q nodeQueue) isEmpty() bool {
+func newPendingQueue(ids ...BoardId) pendingQueue {
+	return pendingQueue{queue: ids, len: len(ids)}
+}
+
+func (q pendingQueue) isEmpty() bool {
 	return q.len == 0
 }
 
-func (q *nodeQueue) push(node solutionNode) {
-	q.queue = append(q.queue, node)
+func (q *pendingQueue) push(id BoardId) {
+	q.queue = append(q.queue, id)
 	q.len++
 }
 
-func (q *nodeQueue) pop() solutionNode {
+func (q *pendingQueue) pop() BoardId {
 	if q.isEmpty() {
 		panic("Queue is isEmpty")
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/atrico-go/core"
 	"github.com/atrico-go/tree"
@@ -15,6 +16,9 @@ func (b Board) Solve() ([]MoveList, error) {
 	initial := newRootSolutionNode(b)
 	tree := make(solutionTree, 1)
 	tree[b.Id()] = initial
+	// DEBUG start
+	defer tree.DisplayAsTree(b.Id())
+	// DEBUG end
 	return solve(tree, newPendingQueue(b.Id()))
 }
 
@@ -70,9 +74,6 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 		// Sort the queue for priority
 		queue.prioritisePendingQueue(tree)
 	}
-	// DEBUG start
-	tree.DisplayAsTree()
-	// DEBUG end
 	if len(solutions) == 0 {
 		return nil, errors.New("cannot be solved")
 	}
@@ -142,8 +143,34 @@ func (t solutionTree) findMoveInParent(parentId, nodeId BoardId) Move {
 	panic("Invalid parent relationship")
 }
 
-func (t solutionTree) DisplayAsTree() {
-	core.DisplayMultiline(tree.DisplayTree(t, tree.DisplayTreeConfig{}))
+type displayableTree struct {
+	Tree solutionTree
+	Id BoardId
+	Move Move
+}
+func (t solutionTree) DisplayAsTree(root BoardId) {
+	for _,line := range tree.DisplayTree(displayableTree{t, root,NewMove(0,0)}, tree.DisplayTreeConfig{Type: tree.TopDown}) {
+		fmt.Println(line)
+	}
+}
+func (t displayableTree) NodeValue() interface{} {
+	node := t.Tree[t.Id]
+	txt := strings.Builder{}
+	if len(t.Move.Directions) > 0 {
+		txt.WriteString(fmt.Sprintf("%v => ", t.Move))
+	}
+	txt.WriteString(NewBoardFromId(t.Id).String())
+	txt.WriteString(fmt.Sprintf("(%d/%d)", node.MoveCount, node.RemainingPegs))
+	return txt.String()
+}
+
+func (t displayableTree) Children() []tree.Node {
+	node := t.Tree[t.Id]
+	nodes := make([]tree.Node,len(node.Links))
+	for i,lnk := range node.Links {
+		nodes[i] = displayableTree{t.Tree,lnk.Target, lnk.Move}
+	}
+	return nodes
 }
 
 

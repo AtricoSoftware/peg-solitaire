@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 
 	"github.com/atrico-go/core"
 	"github.com/atrico-go/tree"
+	treedisplay "github.com/atrico-go/tree/display"
 )
 
 func (b Board) Solve() ([]MoveList, error) {
@@ -36,7 +38,7 @@ func solve(tree solutionTree, queue pendingQueue) ([]MoveList, error) {
 		nodeId := queue.pop()
 		node := tree[nodeId]
 		// Have we passed the quickest Moves
-		if node.MoveCount > solved || (node.MoveCount == solved && node.RemainingPegs > 1){
+		if node.MoveCount > solved || (node.MoveCount == solved && node.RemainingPegs > 1) {
 			break
 		}
 		// Check for already solved
@@ -145,11 +147,13 @@ func (t solutionTree) findMoveInParent(parentId, nodeId BoardId) Move {
 
 type displayableTree struct {
 	Tree solutionTree
-	Id BoardId
+	Id   BoardId
 	Move Move
 }
+
+
 func (t solutionTree) DisplayAsTree(root BoardId) {
-	for _,line := range tree.DisplayTree(displayableTree{t, root,NewMove(0,0)}, tree.DisplayTreeConfig{Type: tree.TopDown}) {
+	for _, line := range treedisplay.DisplayTree(displayableTree{t, root, NewMove(0, 0)}, treedisplay.DisplayTreeConfig{Type: treedisplay.TopDown}) {
 		fmt.Println(line)
 	}
 }
@@ -166,13 +170,15 @@ func (t displayableTree) NodeValue() interface{} {
 
 func (t displayableTree) Children() []tree.Node {
 	node := t.Tree[t.Id]
-	nodes := make([]tree.Node,len(node.Links))
-	for i,lnk := range node.Links {
-		nodes[i] = displayableTree{t.Tree,lnk.Target, lnk.Move}
+	nodes := make([]tree.Node, len(node.Links))
+	for i, lnk := range node.Links {
+		nodes[i] = displayableTree{t.Tree, lnk.Target, lnk.Move}
 	}
 	return nodes
 }
-
+func (t displayableTree) Equals(rhs tree.Node) bool {
+	return reflect.DeepEqual(t,rhs.NodeValue())
+}
 
 func insertIntoMoveList(move Move, list MoveList) MoveList {
 	newList := make(MoveList, len(list)+1)
@@ -219,4 +225,3 @@ func (q *pendingQueue) prioritisePendingQueue(t solutionTree) {
 		return t[q.queue[i]].RemainingPegs < t[q.queue[j]].RemainingPegs
 	})
 }
-
